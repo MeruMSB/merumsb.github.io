@@ -61,6 +61,7 @@
                 border-radius: 5px;
                 padding: 10px 20px 20px;
                 margin: 0 auto;
+                border: #999;
             }
             .pic-list li .pic-index {
                 margin-bottom: 8px;
@@ -91,8 +92,7 @@
                 textarea.value = "";
                 pic_list.innerHTML = "";
                 
-                var re = new RegExp("(?= \| | \· | \- |\. ).*(?=https:\/\/)", "g");
-                
+                var re = new RegExp(/(?= \| | \· | \- |\. ).*(?=https:\/\/)/, "g");
                 textarea_value = textarea_value.split(/\r?\n|\r|\n/g)
                     .filter(s => s.match(re))
                     .map(s => {
@@ -104,24 +104,25 @@
                             parts[1] = index.length > 8 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
                         }
 
-                        return [
-                            parts[0],
-                            parts[1]
-                        ];
-                    })
-                    .reduce((a, v) => ({ ...a, [v[0]]: v[1]}), {});
+                        return {
+                            key: parts[0],
+                            pic: parts[1]
+                        };
+                    });
 
+                    console.log(textarea_value);
                 for(let index in textarea_value) {
                     if(typeof index=="undefined") continue;
+                    let value = textarea_value[index];
                     let li = document.createElement("li");
                     let pic_content = document.createElement("div");
                         pic_content.classList = "pic-content";
 
                     let pic_index = document.createElement("div");
                         pic_index.classList = "pic-index";
-                        pic_index.innerText = index;
+                        pic_index.innerText = value.key;
                     let img = document.createElement("img");
-                        img.src = textarea_value[index];
+                        img.src = value.pic;
 
                     li.appendChild(pic_content);
                     pic_content.appendChild(pic_index);
