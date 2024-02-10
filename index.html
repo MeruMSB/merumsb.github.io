@@ -75,6 +75,16 @@
                 display: block;
                 margin: 0 auto;
             }
+            .fixed {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                border-radius: 5px 0 0 0;
+                background:#343639;
+                padding: 5px 8px;
+                font-size: 12px;
+                font-family: monospace;
+            }
         </style>
     </head>
     <body>
@@ -84,6 +94,7 @@
         </div>
         <ul id="pic_list" class="pic-list"></ul>
         
+        <div class="fixed">$ly Nosepass</div>
         <script type="text/javascript">
             const textarea = document.getElementById("character_textarea");
             const pic_list = document.getElementById("pic_list");
@@ -101,6 +112,7 @@
                     .map(s => {
                         let parts = s.split(re);
 
+                        parts[2] = parts[1];
                         if(parts[1].includes("mudae.net")) {
                             let index_img = parts[1].split("~")[1];
                             let index = index_img.split(".")[0];
@@ -109,7 +121,8 @@
 
                         return {
                             key: parts[0],
-                            pic: parts[1]
+                            pic: parts[1],
+                            pic_mudae: parts[2]
                         };
                     });
                 textarea_value.sort(function(a, b) {
@@ -128,6 +141,9 @@
                         pic_index.innerText = value.key;
                     let img = document.createElement("img");
                         img.src = value.pic;
+                        img.onload = function() {
+                            this.src = value.pic_mudae;
+                        };
 
                     li.appendChild(pic_content);
                     pic_content.appendChild(pic_index);
