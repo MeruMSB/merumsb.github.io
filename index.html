@@ -76,7 +76,7 @@
     </head>
     <body>
         <div class="admin">
-            <textarea id="character_textarea" class="character-textarea" rows="1" placeholder="[commands: $ims / $imsi-] Paste the command result (format: #. link) "></textarea>
+            <textarea id="character_textarea" class="character-textarea" rows="1" placeholder="[$imsi-] Paste the command result"></textarea>
             <button id="btn" href="#" class="btn" type="button">Confirm</button>
         </div>
         <ul id="pic_list" class="pic-list"></ul>
@@ -98,19 +98,23 @@
                     .map(s => {
                         let parts = s.split(re);
 
+                        /*
                         if(parts[1].includes("mudae.net")) {
                             let index_img = parts[1].split("~")[1];
                             let index = index_img.split(".")[0];
-                            parts[1] = index.length > 8 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
+                            parts[1] = index.length > 7 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
                         }
+                        */
 
                         return {
                             key: parts[0],
                             pic: parts[1]
                         };
                     });
+                textarea_value.sort(function(a, b) {
+                    return a.key - b.key;
+                });
 
-                    console.log(textarea_value);
                 for(let index in textarea_value) {
                     if(typeof index=="undefined") continue;
                     let value = textarea_value[index];
