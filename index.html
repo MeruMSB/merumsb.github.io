@@ -142,7 +142,7 @@
                         pic_index.innerText = value.key;
                     let img = document.createElement("img");
                         img.src = value.pic;
-                        img.onload = function() {
+                        img.onerror = function() {
                             this.src = value.pic_mudae;
                         };
 
