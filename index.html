@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -140,18 +141,18 @@
                         pic_index.classList = "pic-index";
                         pic_index.innerText = value.key;
                     let img = document.createElement("img");
-                        img.src = value.pic;
-                        img.referrerpolicy = "no-referrer";
-                        img.onload = function() {
-                            if(e.target.naturalWidth!=225) {
-                                this.src = value.pic_mudae;
-                            }
-                        };
 
                     li.appendChild(pic_content);
                     pic_content.appendChild(pic_index);
                     pic_content.appendChild(img);
                     pic_list.append(li);
+
+                    img.src = value.pic;
+                    img.setAttribute("referrerpolicy", "no-referrer");
+                    img.onload = function() {
+                        this.onload = null;
+                        if(this.width!=225) this.src = value.pic_mudae;
+                    };
                 }
             });
         </script>
