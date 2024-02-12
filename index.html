@@ -196,6 +196,7 @@
                     img.setAttribute("referrerpolicy", "no-referrer");
                     img.onload = function() {
                         this.onload = null;
+                        console.log(value.pic_mudae);
                         if(this.width!=225) this.src = value.pic_mudae;
                     };
                 }
