@@ -46,7 +46,7 @@
                 outline-offset: 0px;
                 border: 1px solid #fff;
             }
-            button {
+            .button {
                 display:inline-block;
                 background:#343639;
                 border-radius: 5px;
@@ -54,11 +54,11 @@
                 border: 1px solid #999;
                 color:white;
             }
-            button:active {
+            .button:active {
                 box-shadow: inset 0 3px 6px #000;
                 background:#222;
             }
-            button:disabled {
+            .button:disabled {
                 opacity: .3;
             }
             .pic-list {
@@ -95,16 +95,42 @@
                 font-family: monospace;
                 box-shadow: 0 0 1px #000;
             }
+            .fixed {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                border-radius: 5px 0 0 0;
+                background:#343639;
+                padding: 5px 8px;
+                font-size: 12px;
+                font-family: monospace;
+                box-shadow: 0 0 1px #000;
+            }
+            .alert {
+                position: fixed;
+                background: #256425;
+                border: 1px solid #0006;
+                border-radius: 5px 0 0 5px;
+                right: 0;
+                top: 50px;
+                padding: 15px 50px;
+                transition: all .3s linear;
+                transform: translateX(100%);
+            }
+            .alert.active {
+                transform: translateX(0);
+            }
         </style>
     </head>
     <body>
         <div class="admin">
             <textarea id="character_textarea" class="character-textarea" rows="1" placeholder="[$imsi- / $mmsi-] Paste the command result"></textarea>
-            <button id="btn" class="btn" type="button">Confirm</button>
-            <button id="arrange" class="btn" type="button" disabled>Copy Arrange</button>
+            <button id="btn" class="button" type="button">Confirm</button>
+            <button id="arrange" class="button" type="button" disabled>Copy Arrange</button>
         </div>
         <ul id="pic_list" class="pic-list"></ul>
         
+        <div id="alert" class="alert"></div>
         <div class="fixed">$ly Nosepass</div>
         
         <script src="Sortable.min.js"></script>
@@ -112,6 +138,7 @@
             const textarea = document.getElementById("character_textarea");
             const pic_list = document.getElementById("pic_list");
             const arrange = document.getElementById("arrange");
+            const alert = document.getElementById("alert");
             
             document.getElementById("btn").addEventListener("click",function(e){
                 e.preventDefault();
@@ -183,7 +210,13 @@
                                 arrangeText.push(ids[child.dataset.id]);
                             }
                             navigator.clipboard.writeText(arrangeText.join(" > "));
-                        })
+
+                            alert.innerHTML = "<strong>arrange</strong> copied!";
+                            alert.classList.add("active");
+                            setTimeout(function(){
+                                alert.classList.remove("active");
+                            },2500) 
+                        });
                     }
                 });
             });
