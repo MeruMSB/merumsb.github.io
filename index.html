@@ -54,12 +54,19 @@
                 border: 1px solid #999;
                 color:white;
             }
+            button:active {
+                box-shadow: inset 0 3px 6px #000;
+                background:#222;
+            }
+            button:disabled {
+                opacity: .3;
+            }
             .pic-list {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 grid-gap: 5px;
             }
-            .pic-list li .pic-content {
+            .pic-list li.pic-content {
                 width: 238px;
                 background:#2B2D31;
                 border-radius: 5px;
@@ -67,6 +74,7 @@
                 margin: 0 auto;
                 border: #999;
             }
+            .pic-list li.pic-content.selected {}
             .pic-list li .pic-index {
                 margin-bottom: 8px;
                 font-weight: 600;
@@ -93,22 +101,28 @@
         <div class="admin">
             <textarea id="character_textarea" class="character-textarea" rows="1" placeholder="[$imsi- / $mmsi-] Paste the command result"></textarea>
             <button id="btn" class="btn" type="button">Confirm</button>
+            <button id="arrange" class="btn" type="button" disabled>Copy Arrange</button>
         </div>
         <ul id="pic_list" class="pic-list"></ul>
         
         <div class="fixed">$ly Nosepass</div>
+        
+        <script src="Sortable.min.js"></script>
         <script type="text/javascript">
             const textarea = document.getElementById("character_textarea");
             const pic_list = document.getElementById("pic_list");
+            const arrange = document.getElementById("arrange");
+            
             document.getElementById("btn").addEventListener("click",function(e){
                 e.preventDefault();
+                arrange.setAttribute("disabled", true);
 
-                var textarea_value = document.getElementById("character_textarea").value.trim();
+                let textarea_value = document.getElementById("character_textarea").value.trim();
 
                 textarea.value = "";
                 pic_list.innerHTML = "";
                 
-                var re = new RegExp(/(?= \| | \· | \- |\. ).*(?=https:\/\/)/, "g");
+                let re = new RegExp(/(?= \| | \· | \- |\. ).*(?=https:\/\/)/, "g");
                 textarea_value = textarea_value.split(/\r?\n|\r|\n/g)
                     .filter(s => s.match(re))
                     .map(s => {
@@ -130,21 +144,25 @@
                     return a.key - b.key;
                 });
 
+                let ids = {};
                 for(let index in textarea_value) {
                     if(typeof index=="undefined") continue;
                     let value = textarea_value[index];
+
+                    let dataId = crypto.randomUUID();
+                    ids[dataId] = value.key;
+
                     let li = document.createElement("li");
-                    let pic_content = document.createElement("div");
-                        pic_content.classList = "pic-content";
+                        li.classList = "pic-content";
+                        li.dataset.id = dataId;
 
                     let pic_index = document.createElement("div");
                         pic_index.classList = "pic-index";
                         pic_index.innerText = value.key;
                     let img = document.createElement("img");
 
-                    li.appendChild(pic_content);
-                    pic_content.appendChild(pic_index);
-                    pic_content.appendChild(img);
+                    li.appendChild(pic_index);
+                    li.appendChild(img);
                     pic_list.append(li);
 
                     img.src = value.pic;
@@ -154,6 +172,20 @@
                         if(this.width!=225) this.src = value.pic_mudae;
                     };
                 }
+                new Sortable(pic_list, {
+                    animation: 150,
+                    ghostClass: 'selected',
+                    onEnd: function() {
+                        arrange.removeAttribute("disabled");
+                        arrange.addEventListener("click", function() {
+                            let arrangeText = [];
+                            for(const child of pic_list.children) {
+                                arrangeText.push(ids[child.dataset.id]);
+                            }
+                            navigator.clipboard.writeText(arrangeText.join(" > "));
+                        })
+                    }
+                });
             });
         </script>
     </body>
