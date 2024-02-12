@@ -116,8 +116,7 @@
                         parts[2] = parts[1];
                         if(parts[1].includes("mudae.net")) {
                             let index_img = parts[1].split("~")[1];
-                            let index = index_img.split(".")[0];
-                            parts[1] = index.length > 7 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
+                            parts[1] = index_img.length > 12 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
                         }
 
                         return {
@@ -142,8 +141,11 @@
                         pic_index.innerText = value.key;
                     let img = document.createElement("img");
                         img.src = value.pic;
-                        img.onerror = function() {
-                            this.src = value.pic_mudae;
+                        img.referrerpolicy = "no-referrer";
+                        img.onload = function() {
+                            if(e.target.naturalWidth!=225) {
+                                this.src = value.pic_mudae;
+                            }
                         };
 
                     li.appendChild(pic_content);
