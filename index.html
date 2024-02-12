@@ -171,6 +171,7 @@
                     return a.key - b.key;
                 });
 
+                console.log(textarea_value);
                 let ids = {};
                 for(let index in textarea_value) {
                     if(typeof index=="undefined") continue;
@@ -196,7 +197,6 @@
                     img.setAttribute("referrerpolicy", "no-referrer");
                     img.onload = function() {
                         this.onload = null;
-                        console.log(value.pic_mudae);
                         if(this.width!=225) this.src = value.pic_mudae;
                     };
                 }
