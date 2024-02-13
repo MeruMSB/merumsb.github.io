@@ -229,7 +229,6 @@
                     }));
                 }
                 Promise.all(proms).then(data=>{
-                    console.log("fdshd");
                     collabCreate();
                 })
 
@@ -275,7 +274,6 @@
 
             function collabCreate() {
                 collab.innerText = "";
-                console.log("dfhdf");
                 const images = pic_list.querySelectorAll("img");
                 const canvas = document.createElement("canvas");
                 const ctx = canvas.getContext("2d");
@@ -290,10 +288,8 @@
 
                 let i = 0;
                 for(let i=0;i<images.length;i++) {
-                    console.log(images[i]);
                     let x = i%col*imgWidth;
                     let y = Math.floor(i/col)*imgHeight;
-                    console.log([x, y]);
                     ctx.drawImage(images[i], x, y, imgWidth, imgHeight);
                 }
 
