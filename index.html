@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="robots" content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Mudae Image Tool</title>
         <style type="text/css">
@@ -45,6 +46,12 @@
             .admin textarea:focus {
                 outline-offset: 0px;
                 border: 1px solid #fff;
+            }
+            button {
+                border: none;
+                background: none;
+                color: inherit;
+                cursor: pointer;
             }
             .button {
                 display:inline-block;
@@ -94,17 +101,6 @@
                 display: block;
                 margin: 0 auto;
             }
-            .fixed {
-                position: fixed;
-                bottom: 0;
-                right: 0;
-                border-radius: 5px 0 0 0;
-                background:#343639;
-                padding: 5px 8px;
-                font-size: 12px;
-                font-family: monospace;
-                box-shadow: 0 0 1px #000;
-            }
             .alert {
                 position: fixed;
                 background: #256425;
@@ -115,6 +111,16 @@
                 padding: 15px 50px;
                 transition: all .3s linear;
                 transform: translateX(100%);
+            }
+            .alert .alert-close {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 40px;
+                height: 40px;
+                text-align: center;
+                line-height: 40px;
+                font-size: 16px;
             }
             .alert.active {
                 transform: translateX(0);
@@ -133,6 +139,22 @@
             .fixed strong {
                 white-space: nowrap;
             }
+            .fixed .button {
+                padding: 3px 6px;
+            }
+            @media (max-width: 768px) {
+                .pic-list {
+                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                }
+                .pic-list li.pic-content {
+                    width: 190px;
+                }
+                .fixed {
+                    width: 100%;
+                    border-radius: 0;
+                    text-align: center;
+                }
+            }
         </style>
     </head>
     <body>
@@ -145,8 +167,11 @@
         <div id="collab" class="collab" style="display: none;"></div>
         <ul id="pic_list" class="pic-list"></ul>
         
-        <div id="alert" class="alert"></div>
-        <div class="fixed">Vote my favourite character: <strong>$ly Nosepass</strong></div>
+        <div id="alert" class="alert">
+            <button id="alert_close" class="alert-close" type="button">✖</button>
+            <div id="alert_content"></div>
+        </div>
+        <div class="fixed">Like my favourite character: <button id="vote_my_fave" class="button" type="button">$ly Nosepass</button></div>
         
         <script src="Sortable.min.js"></script>
         <script type="text/javascript">
@@ -155,7 +180,8 @@
             const arrange = document.getElementById("arrange");
             const collab_btn = document.getElementById("collab_btn");
             const collab = document.getElementById("collab");
-            const alert = document.getElementById("alert");
+            
+            let alert_timeout;
             
             document.getElementById("btn").addEventListener("click",function(e){
                 e.preventDefault();
@@ -245,11 +271,7 @@
                             }
                             navigator.clipboard.writeText(arrangeText.join(" > "));
 
-                            alert.innerHTML = "<strong>arrange</strong> copied!";
-                            alert.classList.add("active");
-                            setTimeout(function(){
-                                alert.classList.remove("active");
-                            },2500) 
+                            show_alert(2500, "<strong>arrange</strong> copied!");
                         });
                     }
                 });
@@ -262,6 +284,33 @@
                     collab_status(0);
                 }
             });
+
+            document.getElementById("vote_my_fave").addEventListener("click", function(e){
+                e.preventDefault();
+
+                navigator.clipboard.writeText("$ly Nosepass");
+                show_alert(3000, '<strong>$ly Nosepass</strong> copied!<br/><br/>Paste the command in your Mudae channel.<br/>Thanks for like it!<br/><img width="40" src="petting_probopass.gif">');
+            });
+            
+            document.getElementById("alert_close").addEventListener("click", function(e){
+                e.preventDefault();
+                
+                clearTimeout(alert_timeout);
+                document.getElementById("alert").classList.remove("active");
+            });  
+
+            function show_alert(time, msg) {
+                clearTimeout(alert_timeout);
+                const alert = document.getElementById("alert");
+                const alert_content = document.getElementById("alert_content");
+
+                alert_content.innerHTML = msg;
+                alert.classList.add("active");
+                alert_timeout = setTimeout(function(){
+                    alert.classList.remove("active");
+                }, time);
+            }
+            
 
             function collab_status(status) {
                 if(status) {
