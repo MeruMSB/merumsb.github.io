@@ -237,6 +237,7 @@
                     ghostClass: 'selected',
                     onEnd: function() {
                         arrange.removeAttribute("disabled");
+                        collabCreate();
                         arrange.addEventListener("click", function() {
                             let arrangeText = [];
                             for(const child of pic_list.children) {
