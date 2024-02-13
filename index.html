@@ -61,6 +61,16 @@
             .button:disabled {
                 opacity: .3;
             }
+            .collab {
+                margin-bottom: 16px;
+            }
+            .collab canvas {
+                display: block;
+                max-width: 100%;
+                max-height: 800px;
+                height: auto;
+                margin: 0 auto;
+            }
             .pic-list {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -95,17 +105,6 @@
                 font-family: monospace;
                 box-shadow: 0 0 1px #000;
             }
-            .fixed {
-                position: fixed;
-                bottom: 0;
-                right: 0;
-                border-radius: 5px 0 0 0;
-                background:#343639;
-                padding: 5px 8px;
-                font-size: 12px;
-                font-family: monospace;
-                box-shadow: 0 0 1px #000;
-            }
             .alert {
                 position: fixed;
                 background: #256425;
@@ -120,28 +119,47 @@
             .alert.active {
                 transform: translateX(0);
             }
+            .fixed {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                border-radius: 5px 0 0 0;
+                background:#343639;
+                padding: 5px 8px;
+                font-size: 12px;
+                font-family: monospace;
+                box-shadow: 0 0 1px #000;
+            }
+            .fixed strong {
+                white-space: nowrap;
+            }
         </style>
     </head>
     <body>
         <div class="admin">
             <textarea id="character_textarea" class="character-textarea" rows="1" placeholder="[$imsi- / $mmsi-] Paste the command result"></textarea>
             <button id="btn" class="button" type="button">Confirm</button>
-            <button id="arrange" class="button" type="button" disabled>Copy Arrange</button>
+            <button id="collab_btn" class="button" type="button" disabled>Show collab</button>
+            <button id="arrange" class="button" type="button" disabled>Copy arrange</button>
         </div>
+        <div id="collab" class="collab" style="display: none;">asfas</div>
         <ul id="pic_list" class="pic-list"></ul>
         
         <div id="alert" class="alert"></div>
-        <div class="fixed">$ly Nosepass</div>
+        <div class="fixed">Vote my favourite character: <strong>$ly Nosepass</strong></div>
         
         <script src="Sortable.min.js"></script>
         <script type="text/javascript">
             const textarea = document.getElementById("character_textarea");
             const pic_list = document.getElementById("pic_list");
             const arrange = document.getElementById("arrange");
+            const collab_btn = document.getElementById("collab_btn");
+            const collab = document.getElementById("collab");
             const alert = document.getElementById("alert");
             
             document.getElementById("btn").addEventListener("click",function(e){
                 e.preventDefault();
+                collab_btn.removeAttribute("disabled");
                 arrange.setAttribute("disabled", true);
 
                 let textarea_value = document.getElementById("character_textarea").value.trim();
@@ -172,6 +190,7 @@
                     return a.key - b.key;
                 });
 
+                let proms = [];
                 let ids = {};
                 for(let index in textarea_value) {
                     if(typeof index=="undefined") continue;
@@ -195,11 +214,25 @@
 
                     img.src = value.pic;
                     img.setAttribute("referrerpolicy", "no-referrer");
-                    img.onload = function() {
-                        this.onload = null;
-                        if(this.width!=225) this.src = value.pic_mudae;
-                    };
+                    proms.push(new Promise(resolve => {
+                        img.onload = function() {
+                            if(this.naturalWidth!=225) {
+                                this.src = value.pic_mudae;
+                                this.onload = function() {
+                                    resolve(2);
+                                };
+                            } else {
+                                this.onload = null;
+                                resolve(1);
+                            }
+                        }
+                    }));
                 }
+                Promise.all(proms).then(data=>{
+                    console.log("fdshd");
+                    collabCreate();
+                })
+
                 new Sortable(pic_list, {
                     animation: 150,
                     ghostClass: 'selected',
@@ -221,6 +254,51 @@
                     }
                 });
             });
+
+            collab_btn.addEventListener("click", function() {
+                if(collab.style.display=="none") {
+                    collab_status(1);
+                } else {
+                    collab_status(0);
+                }
+            });
+
+            function collab_status(status) {
+                if(status) {
+                    collab_btn.innerText = "Hide collab";
+                    collab.style.display = "";
+                } else {
+                    collab_btn.innerText = "Show collab";
+                    collab.style.display = "none";
+                }
+            }
+
+            function collabCreate() {
+                collab.innerText = "";
+                console.log("dfhdf");
+                const images = pic_list.querySelectorAll("img");
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                const imgWidth = 225;
+                const imgHeight = 350;
+                const maxCol = 12;
+                
+                let col = images.length<maxCol ? images.length : maxCol;
+                let row = Math.ceil(images.length/col);
+                canvas.width = imgWidth*col;
+                canvas.height = imgHeight*row;
+
+                let i = 0;
+                for(let i=0;i<images.length;i++) {
+                    console.log(images[i]);
+                    let x = i%col*imgWidth;
+                    let y = Math.floor(i/col)*imgHeight;
+                    console.log([x, y]);
+                    ctx.drawImage(images[i], x, y, imgWidth, imgHeight);
+                }
+
+                collab.appendChild(canvas);
+            }
         </script>
     </body>
 </html>
