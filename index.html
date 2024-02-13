@@ -281,9 +281,9 @@
                 const imgWidth = 225;
                 const imgHeight = 350;
                 const maxCol = 12;
-                const bigCollabLimit = 110;
+                const bigCollabLimit = 100;
                 
-                let col = images.length<maxCol ? images.length : images.length>bigCollabLimit ? Math.ceil(Math.sqrt(images.length)+1) : maxCol;
+                let col = images.length<maxCol ? images.length : images.length>bigCollabLimit ? Math.ceil(Math.sqrt(images.length)) : maxCol;
                 let row = Math.ceil(images.length/col);
                 canvas.width = imgWidth*col;
                 canvas.height = imgHeight*row;
