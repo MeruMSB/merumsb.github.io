@@ -279,15 +279,6 @@
                 Promise.all(proms).then(data=>{
                     collabCreate();
                 })
-
-                new Sortable(pic_list, {
-                    animation: 150,
-                    ghostClass: 'selected',
-                    onEnd: function() {
-                        arrange.removeAttribute("disabled");
-                        collabCreate();
-                    }
-                });
             });
 
             collab_btn.addEventListener("click", function() {
@@ -368,6 +359,15 @@
 
                 collab.appendChild(canvas);
             }
+
+            new Sortable(pic_list, {
+                animation: 150,
+                ghostClass: 'selected',
+                onEnd: function() {
+                    arrange.removeAttribute("disabled");
+                    collabCreate();
+                }
+            });
         </script>
     </body>
 </html>
