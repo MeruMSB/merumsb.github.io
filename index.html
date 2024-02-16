@@ -111,6 +111,7 @@
                 padding: 15px 50px;
                 transition: all .3s linear;
                 transform: translateX(100%);
+                z-index: 1;
             }
             .alert .alert-close {
                 position: absolute;
@@ -143,6 +144,19 @@
                 padding: 3px 6px;
             }
             @media (max-width: 768px) {
+                .admin {
+                    flex-wrap: wrap;
+                }
+                .admin textarea {
+                    width:100%;
+                    padding: 6px;
+                    font-size: 12px;
+                }
+                .button {
+                    padding: 6px;
+                    flex: 1 0 0;
+                    font-size: 12px;
+                }
                 .pic-list {
                     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
                 }
@@ -153,6 +167,15 @@
                     width: 100%;
                     border-radius: 0;
                     text-align: center;
+                    font-size: 10px;
+                }
+                .alert {
+                    top: auto;
+                    bottom: 0;
+                    transform: translateY(100%);
+                    border-radius: 0;
+                    text-align: center;
+                    width: 100%;
                 }
             }
         </style>
