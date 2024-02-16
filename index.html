@@ -188,7 +188,7 @@
                 collab_btn.removeAttribute("disabled");
                 arrange.setAttribute("disabled", true);
 
-                let textarea_value = document.getElementById("character_textarea").value.trim();
+                let textarea_value = document.getElementById("character_textarea").value.replaceAll("*", "").trim();
 
                 textarea.value = "";
                 pic_list.innerHTML = "";
@@ -199,7 +199,7 @@
                     .map(s => {
                         let parts = s.split(re);
 
-                        parts[1] = parts[1].replaceAll("<", "").replaceAll(">", "").replaceAll("*", "");
+                        parts[1] = parts[1].replaceAll("<", "").replaceAll(">", "");
                         parts[2] = parts[1];
                         if(parts[1].includes("mudae.net")) {
                             let index_img = parts[1].split("~")[1];
@@ -266,6 +266,7 @@
                         collabCreate();
                         arrange.addEventListener("click", function() {
                             let arrangeText = [];
+                                console.log(pic_list);
                             for(const child of pic_list.children) {
                                 arrangeText.push(ids[child.dataset.id]);
                             }
@@ -310,7 +311,6 @@
                     alert.classList.remove("active");
                 }, time);
             }
-            
 
             function collab_status(status) {
                 if(status) {
