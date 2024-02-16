@@ -204,8 +204,7 @@
             const collab_btn = document.getElementById("collab_btn");
             const collab = document.getElementById("collab");
             
-            let alert_timeout;
-            
+            let alert_timeout, ids;
             document.getElementById("btn").addEventListener("click",function(e){
                 e.preventDefault();
                 collab_btn.removeAttribute("disabled");
@@ -215,6 +214,7 @@
 
                 textarea.value = "";
                 pic_list.innerHTML = "";
+                ids = {};
                 
                 let re = new RegExp(/(?= \| | \· | \- |\. ).*(?=https:\/\/)/, "g");
                 textarea_value = textarea_value.split(/\r?\n|\r|\n/g)
@@ -240,7 +240,6 @@
                 });
 
                 let proms = [];
-                let ids = {};
                 for(let index in textarea_value) {
                     if(typeof index=="undefined") continue;
                     let value = textarea_value[index];
@@ -287,16 +286,6 @@
                     onEnd: function() {
                         arrange.removeAttribute("disabled");
                         collabCreate();
-                        arrange.addEventListener("click", function() {
-                            let arrangeText = [];
-                                console.log(pic_list);
-                            for(const child of pic_list.children) {
-                                arrangeText.push(ids[child.dataset.id]);
-                            }
-                            navigator.clipboard.writeText(arrangeText.join(" > "));
-
-                            show_alert(2500, "<strong>arrange</strong> copied!");
-                        });
                     }
                 });
             });
@@ -307,6 +296,16 @@
                 } else {
                     collab_status(0);
                 }
+            });
+
+            arrange.addEventListener("click", function() {
+                let arrangeText = [];
+                for(const child of pic_list.children) {
+                    arrangeText.push(ids[child.dataset.id]);
+                }
+                navigator.clipboard.writeText(arrangeText.join(" > "));
+
+                show_alert(2500, "<strong>arrange</strong> copied!");
             });
 
             document.getElementById("vote_my_fave").addEventListener("click", function(e){
