@@ -5,69 +5,8 @@
         <meta name="robots" content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Mudae Image Tool</title>
+        <link rel="stylesheet" href="style.css">
         <style type="text/css">
-            * {
-                box-sizing: border-box;
-            }
-            a {
-                color: inherit;
-                text-decoration: none;
-            }
-            ul {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-            }
-            body {
-                background:#222;
-                color:white;
-                font-family: "Arial";
-            }
-            .admin {
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                margin-bottom: 16px;
-            }
-            .admin textarea {
-                width:50%;
-                background:#343639;
-                color:white;
-                padding: 8px;
-                resize: none;
-                font-family: monospace;
-                outline: none;
-                border: 1px solid #999;
-                border-radius: 5px;
-                
-            }
-            .admin textarea:focus {
-                outline-offset: 0px;
-                border: 1px solid #fff;
-            }
-            button {
-                border: none;
-                background: none;
-                color: inherit;
-                cursor: pointer;
-            }
-            .button {
-                display:inline-block;
-                background:#343639;
-                border-radius: 5px;
-                padding: 8px;
-                border: 1px solid #999;
-                color:white;
-            }
-            .button:active {
-                box-shadow: inset 0 3px 6px #000;
-                background:#222;
-            }
-            .button:disabled {
-                opacity: .3;
-            }
             .collab {
                 margin-bottom: 16px;
             }
@@ -101,88 +40,20 @@
                 display: block;
                 margin: 0 auto;
             }
-            .alert {
-                position: fixed;
-                background: #256425;
-                border: 1px solid #0006;
-                border-radius: 5px 0 0 5px;
-                right: 0;
-                top: 50px;
-                padding: 15px 50px;
-                transition: all .3s linear;
-                transform: translateX(100%);
-                z-index: 1;
-            }
-            .alert .alert-close {
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 40px;
-                height: 40px;
-                text-align: center;
-                line-height: 40px;
-                font-size: 16px;
-            }
-            .alert.active {
-                transform: translateX(0);
-            }
-            .fixed {
-                position: fixed;
-                bottom: 0;
-                right: 0;
-                border-radius: 5px 0 0 0;
-                background:#343639;
-                padding: 5px 8px;
-                font-size: 12px;
-                font-family: monospace;
-                box-shadow: 0 0 1px #000;
-            }
-            .fixed strong {
-                white-space: nowrap;
-            }
-            .fixed .button {
-                padding: 3px 6px;
-            }
             @media (max-width: 768px) {
-                .admin {
-                    flex-wrap: wrap;
-                }
-                .admin textarea {
-                    width:100%;
-                    padding: 6px;
-                    font-size: 12px;
-                }
-                .button {
-                    padding: 6px;
-                    flex: 1 0 0;
-                    font-size: 12px;
-                }
                 .pic-list {
                     grid-template-columns: repeat(auto-fill, minmax(198px, 1fr));
                 }
                 .pic-list li.pic-content {
                     width: 190px;
                 }
-                .fixed {
-                    width: 100%;
-                    border-radius: 0;
-                    text-align: center;
-                    font-size: 10px;
-                }
-                .alert {
-                    top: auto;
-                    bottom: 0;
-                    transform: translateY(100%);
-                    border-radius: 0;
-                    text-align: center;
-                    width: 100%;
-                }
             }
         </style>
     </head>
     <body>
+
         <div class="admin">
-            <textarea id="character_textarea" class="character-textarea" rows="1" placeholder="[$imsi- / $mmsi-] Paste the command result"></textarea>
+            <textarea id="textarea" class="textarea" rows="1" placeholder="[$imsi- / $mmsi-] Paste the command result"></textarea>
             <button id="btn" class="button" type="button">Confirm</button>
             <button id="collab_btn" class="button" type="button" disabled>Show collab</button>
             <button id="arrange" class="button" type="button" disabled>Copy arrange</button>
@@ -194,25 +65,26 @@
             <button id="alert_close" class="alert-close" type="button">✖</button>
             <div id="alert_content"></div>
         </div>
-        <div class="fixed">Like my favourite character: <button id="vote_my_fave" class="button" type="button">$ly Nosepass</button></div>
+        <div class="fixed">Support my favourite character: <button id="vote_my_fave" class="button" type="button">$ly Nosepass</button></div>
         
+        <script src="general.js"></script>
         <script src="Sortable.min.js"></script>
         <script type="text/javascript">
-            const textarea = document.getElementById("character_textarea");
+            const textarea = document.getElementById("textarea");
             const pic_list = document.getElementById("pic_list");
             const arrange = document.getElementById("arrange");
             const collab_btn = document.getElementById("collab_btn");
             const collab = document.getElementById("collab");
             
-            let alert_timeout, ids;
+            let ids;
             document.getElementById("btn").addEventListener("click",function(e){
                 e.preventDefault();
                 collab_btn.removeAttribute("disabled");
                 arrange.setAttribute("disabled", true);
 
-                let textarea_value = document.getElementById("character_textarea").value.replaceAll("*", "").trim();
-
+                let textarea_value = textarea.value.replaceAll("*", "");
                 textarea.value = "";
+
                 pic_list.innerHTML = "";
                 ids = {};
                 
@@ -298,32 +170,6 @@
 
                 show_alert(2500, "<strong>arrange</strong> copied!");
             });
-
-            document.getElementById("vote_my_fave").addEventListener("click", function(e){
-                e.preventDefault();
-
-                navigator.clipboard.writeText("$ly Nosepass");
-                show_alert(3000, '<strong>$ly Nosepass</strong> copied!<br/><br/>Paste the command in your Mudae channel.<br/>Thanks for like it!<br/><img width="40" src="petting_probopass.gif">');
-            });
-            
-            document.getElementById("alert_close").addEventListener("click", function(e){
-                e.preventDefault();
-                
-                clearTimeout(alert_timeout);
-                document.getElementById("alert").classList.remove("active");
-            });  
-
-            function show_alert(time, msg) {
-                clearTimeout(alert_timeout);
-                const alert = document.getElementById("alert");
-                const alert_content = document.getElementById("alert_content");
-
-                alert_content.innerHTML = msg;
-                alert.classList.add("active");
-                alert_timeout = setTimeout(function(){
-                    alert.classList.remove("active");
-                }, time);
-            }
 
             function collab_status(status) {
                 if(status) {
