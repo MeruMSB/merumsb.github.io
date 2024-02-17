@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="robots" content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Save your notes!</title>
+        <title>Mudae Tool: Re-note your harem</title>
 
         <link rel="stylesheet" href="style.css">
         <style type="text/css">
@@ -85,7 +85,7 @@
             .command-txt .separator {
                 color: #79c59f;
             }
-            .command-txt .note {
+            .command-txt .important {
                 color: #93b6eb;
             }
         </style>
@@ -172,7 +172,7 @@
                     for(let i=0;i<note_list.length;i++) {
                         note_list[i].push("");
                         let command_txt = "$n "+ note_list[i].join("$")+note;
-                        let command_txt_html = '<span class="command">$n</span> '+ note_list[i].join('<span class="separator">$</span>')+'<span class="note">'+note+'</span>';
+                        let command_txt_html = '<span class="command">$n</span> '+ note_list[i].join('<span class="separator">$</span>')+'<span class="important">'+note+'</span>';
 
                         create_command(command_txt, command_txt_html);
                     }
@@ -184,10 +184,10 @@
                 
                 list.appendChild(notes_extra);
 
-                create_command("$sm abc", '<span class="command">$sm</span> <span class="note">abc</span>', "Sort alphabetically");
+                create_command("$sm abc", '<span class="command">$sm</span> <span class="important">abc</span>', "Sort alphabetically");
 
                 let sort_note = "$sm note "+Object.keys(notes).join("$");
-                let sort_note_html = '<span class="command">$sm</span> <span class="note">note</span> '+Object.keys(notes).join('<span class="separator">$</span>');
+                let sort_note_html = '<span class="command">$sm</span> <span class="important">note</span> '+Object.keys(notes).join('<span class="separator">$</span>');
                 create_command(sort_note, sort_note_html, "Sort by notes");
 
                 function create_command(txt, html, command_title) {

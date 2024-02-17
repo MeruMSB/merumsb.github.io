@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="robots" content="noindex, nofollow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mudae Image Tool</title>
+        <link rel="stylesheet" href="style.css">
+        <style type="text/css">
+            .collab {
+                margin-bottom: 16px;
+            }
+            .collab canvas {
+                display: block;
+                max-width: 100%;
+                max-height: 800px;
+                height: auto;
+                margin: 0 auto;
+            }
+            .pic-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                grid-gap: 5px;
+            }
+            .pic-list li.pic-content {
+                width: 238px;
+                background:#2B2D31;
+                border-radius: 5px;
+                padding: 10px 20px 20px;
+                margin: 0 auto;
+                border: #999;
+            }
+            .pic-list li.pic-content.selected {}
+            .pic-list li .pic-index {
+                margin-bottom: 8px;
+                font-weight: 600;
+            }
+            .pic-list li img {
+                width: 100%;
+                display: block;
+                margin: 0 auto;
+            }
+            @media (max-width: 768px) {
+                .pic-list {
+                    grid-template-columns: repeat(auto-fill, minmax(198px, 1fr));
+                }
+                .pic-list li.pic-content {
+                    width: 190px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="admin">
+            <textarea id="textarea" class="textarea" rows="1" placeholder="[$imsi- / $mmsi-] Paste the command result"></textarea>
+            <button id="btn" class="button" type="button">Confirm</button>
+            <button id="collab_btn" class="button" type="button" disabled>Show collab</button>
+            <button id="arrange" class="button" type="button" disabled>Copy arrange</button>
+        </div>
+        <div id="collab" class="collab" style="display: none;"></div>
+        <ul id="pic_list" class="pic-list"></ul>
+        
+        <div id="alert" class="alert">
+            <button id="alert_close" class="alert-close" type="button">✖</button>
+            <div id="alert_content"></div>
+        </div>
+        <div class="fixed">Support my favourite character: <button id="vote_my_fave" class="button" type="button">$ly Nosepass</button></div>
+        
+        <script src="general.js"></script>
+        <script src="Sortable.min.js"></script>
+        <script type="text/javascript">
+            const textarea = document.getElementById("textarea");
+            const pic_list = document.getElementById("pic_list");
+            const arrange = document.getElementById("arrange");
+            const collab_btn = document.getElementById("collab_btn");
+            const collab = document.getElementById("collab");
+            
+            let ids;
+            document.getElementById("btn").addEventListener("click",function(e){
+                e.preventDefault();
+                collab_btn.removeAttribute("disabled");
+                arrange.setAttribute("disabled", true);
+
+                let textarea_value = textarea.value.replaceAll("*", "");
+                textarea.value = "";
+
+                pic_list.innerHTML = "";
+                ids = {};
+                
+                let re = new RegExp(/(?= \| | \· | \- |\. ).*(?=https:\/\/)/, "g");
+                textarea_value = textarea_value.split(/\r?\n|\r|\n/g)
+                    .filter(s => s.match(re))
+                    .map(s => {
+                        let parts = s.split(re);
+
+                        parts[1] = parts[1].replaceAll("<", "").replaceAll(">", "");
+                        parts[2] = parts[1];
+                        if(parts[1].includes("mudae.net")) {
+                            let index_img = parts[1].split("~")[1];
+                            parts[1] = index_img.length > 12 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
+                        }
+
+                        return {
+                            key: parts[0],
+                            pic: parts[1],
+                            pic_mudae: parts[2]
+                        };
+                    });
+                textarea_value.sort(function(a, b) {
+                    return a.key - b.key;
+                });
+
+                let proms = [];
+                for(let index in textarea_value) {
+                    if(typeof index=="undefined") continue;
+                    let value = textarea_value[index];
+
+                    let dataId = crypto.randomUUID();
+                    ids[dataId] = value.key;
+
+                    let li = document.createElement("li");
+                        li.classList = "pic-content";
+                        li.dataset.id = dataId;
+
+                    let pic_index = document.createElement("div");
+                        pic_index.classList = "pic-index";
+                        pic_index.innerText = value.key;
+                    let img = document.createElement("img");
+
+                    li.appendChild(pic_index);
+                    li.appendChild(img);
+                    pic_list.append(li);
+
+                    img.src = value.pic;
+                    img.setAttribute("referrerpolicy", "no-referrer");
+                    proms.push(new Promise(resolve => {
+                        img.onload = function() {
+                            if(this.naturalWidth!=225) {
+                                this.src = value.pic_mudae;
+                                this.onload = function() {
+                                    resolve(2);
+                                };
+                            } else {
+                                this.onload = null;
+                                resolve(1);
+                            }
+                        }
+                    }));
+                }
+                Promise.all(proms).then(data=>{
+                    collabCreate();
+                })
+            });
+
+            collab_btn.addEventListener("click", function() {
+                if(collab.style.display=="none") {
+                    collab_status(1);
+                } else {
+                    collab_status(0);
+                }
+            });
+
+            arrange.addEventListener("click", function() {
+                let arrangeText = [];
+                for(const child of pic_list.children) {
+                    arrangeText.push(ids[child.dataset.id]);
+                }
+                navigator.clipboard.writeText(arrangeText.join(" > "));
+
+                show_alert(2500, "<strong>arrange</strong> copied!");
+            });
+
+            function collab_status(status) {
+                if(status) {
+                    collab_btn.innerText = "Hide collab";
+                    collab.style.display = "";
+                } else {
+                    collab_btn.innerText = "Show collab";
+                    collab.style.display = "none";
+                }
+            }
+
+            function collabCreate() {
+                collab.innerText = "";
+                const images = pic_list.querySelectorAll("img");
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                const imgWidth = 225;
+                const imgHeight = 350;
+                const maxCol = 12;
+                const bigCollabLimit = 100;
+                
+                let col = images.length<maxCol ? images.length : images.length>bigCollabLimit ? Math.ceil(Math.sqrt(images.length*imgWidth*imgHeight)/imgWidth) : maxCol;
+                let row = Math.ceil(images.length/col);
+                canvas.width = imgWidth*col;
+                canvas.height = imgHeight*row;
+
+                let i = 0;
+                for(let i=0;i<images.length;i++) {
+                    let x = i%col*imgWidth;
+                    let y = Math.floor(i/col)*imgHeight;
+                    ctx.drawImage(images[i], x, y, imgWidth, imgHeight);
+                }
+
+                collab.appendChild(canvas);
+            }
+
+            new Sortable(pic_list, {
+                animation: 150,
+                ghostClass: 'selected',
+                onEnd: function() {
+                    arrange.removeAttribute("disabled");
+                    collabCreate();
+                }
+            });
+        </script>
+    </body>
+</html>
