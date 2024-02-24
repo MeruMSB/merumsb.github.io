@@ -159,6 +159,10 @@
                     notes[character.note][pages[character.note]].push(character.name);
                 }
 
+                if(Object.values(notes).length<0) {
+                    return false;
+                }
+
                 let notes_count = Object.values(notes).reduce((obj, item) => obj.concat(item)).length;
                 let notes_total = document.createElement("li");
                     notes_total.classList.add("notes-total");
