@@ -101,6 +101,7 @@ input[type=checkbox]:checked + .button:after {
     opacity: 0;
     z-index: 1;
     pointer-events: none;
+    max-width: 400px;
 }
 .alert.active {
     transform: translateX(0);
@@ -168,5 +169,6 @@ input[type=checkbox]:checked + .button:after {
         border-radius: 0;
         text-align: center;
         width: 100%;
+        max-width: none;
     }
 }

@@ -88,6 +88,12 @@
                 pic_list.innerHTML = "";
                 ids = {};
                 
+                let command_re = new RegExp(/^\$[a-zA-Z]\S+/);
+                let command_detected = textarea_value.match(command_re);
+                if(command_detected) {
+                    show_alert(5000, "<strong>"+command_detected[0]+"</strong> detected!<br/><br/>You need to send the command in your Mudae channel, then copy the result Mudae sent you via DM and paste it into the tool.");
+                }
+
                 let re = new RegExp(/(?= \| | \· | \- |\. ).*(?=https:\/\/)/, "g");
                 textarea_value = textarea_value.split(/\r?\n|\r|\n/g)
                     .filter(s => s.match(re))
