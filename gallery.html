@@ -56,6 +56,7 @@
             <textarea id="textarea" class="textarea" rows="1" placeholder="[$imsi-] Paste the command result"></textarea>
             <button id="btn" class="button" type="button">Confirm</button>
             <button id="collab_btn" class="button" type="button" disabled>Show collab</button>
+            <button id="copy_ids" class="button" type="button" disabled>Copy IDs</button>
             <button id="arrange" class="button" type="button" disabled>Copy arrange</button>
         </div>
         <div id="collab" class="collab" style="display: none;"></div>
@@ -65,57 +66,77 @@
             <button id="alert_close" class="alert-close" type="button">✖</button>
             <div id="alert_content"></div>
         </div>
-        <div class="fixed">Like my tool? Support my fave character: <button id="vote_my_fave" class="button" type="button">$ly Nosepass</button></div>
+        <div class="fixed">Like my tool? Support my favourite character: <button id="vote_my_fave" class="button" type="button">$ly Nosepass</button></div>
         
         <script src="general.js"></script>
         <script src="Sortable.min.js"></script>
         <script type="text/javascript">
             const textarea = document.getElementById("textarea");
             const pic_list = document.getElementById("pic_list");
+            const copy_ids = document.getElementById("copy_ids");
             const arrange = document.getElementById("arrange");
             const collab_btn = document.getElementById("collab_btn");
             const collab = document.getElementById("collab");
             
-            let ids;
+            let ids, sort_by_numbers;
             document.getElementById("btn").addEventListener("click",function(e){
                 e.preventDefault();
                 collab_btn.removeAttribute("disabled");
+                copy_ids.removeAttribute("disabled");
                 arrange.setAttribute("disabled", true);
+
+                ids = {};
+                sort_by_numbers = true;
 
                 let textarea_value = textarea.value.replaceAll("*", "");
                 textarea.value = "";
-
                 pic_list.innerHTML = "";
-                ids = {};
-                
+
                 let command_re = new RegExp(/^\$[a-zA-Z]\S+/);
                 let command_detected = textarea_value.match(command_re);
                 if(command_detected) {
                     show_alert(5000, "<strong>"+command_detected[0]+"</strong> detected!<br/><br/>You need to send the command in your Mudae channel, then copy the result Mudae sent you via DM and paste it into the tool.");
                 }
 
-                let re = new RegExp(/(?= \| | \· | \- |\. ).*(?=https:\/\/)/, "g");
+                let re = new RegExp(/(?: - |\. |^)(?=https:\/\/)/, "g");
                 textarea_value = textarea_value.split(/\r?\n|\r|\n/g)
                     .filter(s => s.match(re))
                     .map(s => {
                         let parts = s.split(re);
 
+                        console.log(sort_by_numbers);
+                        if(parts.length==1 && parts[0].includes("mudae.net")) {
+                            parts = [
+                                parts[0].match(/(?<=~)[^\.]+/)[0],
+                                parts[0]
+                            ];
+                        }
                         parts[1] = parts[1].replaceAll("<", "").replaceAll(">", "");
                         parts[2] = parts[1];
                         if(parts[1].includes("mudae.net")) {
                             let index_img = parts[1].split("~")[1];
                             parts[1] = index_img.length > 12 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
+                            parts[3] = index_img.split(".")[0];
+                        } else {
+                            parts[3] = parts[1].match(/\/([^\/]+)\.\w+$/)[1];
+                        }
+                        if(isNaN(parts[0])) {
+                            sort_by_numbers = false;
                         }
 
                         return {
                             key: parts[0],
                             pic: parts[1],
-                            pic_mudae: parts[2]
+                            pic_mudae: parts[2],
+                            pic_id: parts[3]
                         };
                     });
-                textarea_value.sort(function(a, b) {
-                    return a.key - b.key;
-                });
+
+                if(sort_by_numbers) {
+                    textarea_value.sort(function(a, b) {
+                        return a.key - b.key;
+                    });
+                }
 
                 let proms = [];
                 for(let index in textarea_value) {
@@ -123,7 +144,10 @@
                     let value = textarea_value[index];
 
                     let dataId = crypto.randomUUID();
-                    ids[dataId] = value.key;
+                    ids[dataId] = {
+                        key: value.key.split(/ \| | · /)[0],
+                        pic_id: value.pic_id
+                    };
 
                     let li = document.createElement("li");
                         li.classList = "pic-content";
@@ -167,12 +191,23 @@
                 }
             });
 
-            arrange.addEventListener("click", function() {
-                let arrangeText = [];
+            copy_ids.addEventListener("click", function() {
+                let pic_ids = [];
                 for(const child of pic_list.children) {
-                    arrangeText.push(ids[child.dataset.id]);
+                    pic_ids.push(ids[child.dataset.id].pic_id);
                 }
-                navigator.clipboard.writeText(arrangeText.join(" > "));
+                navigator.clipboard.writeText(pic_ids.join(" "));
+
+                show_alert(2500, "<strong>Pic IDs</strong> copied!");
+            });
+
+            arrange.addEventListener("click", function() {
+                let arrange_text = [];
+                let separator = sort_by_numbers? ">" : "$" ;
+                for(const child of pic_list.children) {
+                    arrange_text.push(ids[child.dataset.id].key);
+                }
+                navigator.clipboard.writeText(arrange_text.join(" "+separator+" "));
 
                 show_alert(2500, "<strong>arrange</strong> copied!");
             });
