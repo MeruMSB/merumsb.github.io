@@ -98,7 +98,7 @@
                     show_alert(5000, "<strong>"+command_detected[0]+"</strong> detected!<br/><br/>You need to send the command in your Mudae channel, then copy the result Mudae sent you via DM and paste it into the tool.");
                 }
 
-                let re = new RegExp(/(?: - |\. |^)(?=https:\/\/)/, "g");
+                let re = new RegExp(/(?: - |\. |^)(?=https:\/\/|\<https:\/\/)/, "g");
                 textarea_value = textarea_value.split(/\r?\n|\r|\n/g)
                     .filter(s => s.match(re))
                     .map(s => {
