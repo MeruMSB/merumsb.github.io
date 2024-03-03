@@ -78,7 +78,6 @@
                 <select name="cells" class="button">
                     <option value="default">Default (12 columns max)</option>
                     <option value="noEmpty">Reduce empty cells</option>
-                    <option value="square">Square Scale</option>
                 </select>
                 <label class="button-label">
                     <input type="checkbox" id="mark_gifs"/>
@@ -311,8 +310,6 @@
                     } else {
                         col = images.length;
                     }
-                } else if(cellSelectVal=="square") {
-                    col = Math.ceil(Math.sqrt(images.length*imgWidth*imgHeight)/imgWidth);
                 }
                 let row = Math.ceil(images.length/col);
                 canvas.width = imgWidth*col;
