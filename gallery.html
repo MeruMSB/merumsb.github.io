@@ -252,7 +252,7 @@
                 for(const child of pic_list.children) {
                     arrange_text.push(ids[child.dataset.id].custom_index);
                 }
-                navigator.clipboard.writeText(arrange_text.join(" "+separator+" "));
+                navigator.clipboard.writeText("$ai arrange \<CharacterName\> $ "+arrange_text.join(" "+separator+" "));
 
                 show_alert(2500, "<strong>Custom pics arrange</strong> copied!");
             });
