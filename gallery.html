@@ -23,6 +23,11 @@
             .collage-bar {
                 text-align: center;
                 margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
             }
             .pic-list {
                 display: grid;
@@ -66,20 +71,18 @@
             <button id="copy_ids" class="button" type="button" disabled>Copy IDs</button>
             <button id="arrange" class="button" type="button" disabled>Copy arrange</button>
         </div>
-        <div id="collage" class="collage" style="display: none;" >
+        <div id="collage" class="collage" style="display: none;">
             <div class="collage-bar">
-                <div class="admin">
-                    <span>Collage options:</span>
-                    <select name="cells" class="button">
-                        <option value="default">Default (12 columns max)</option>
-                        <option value="noEmpty">Reduce empty cells</option>
-                        <option value="square">Square Scale</option>
-                    </select>
-                    <label class="button-label">
-                        <input type="checkbox" id="mark_gifs"/>
-                        <div class="button">Mark GIF pics</div>
-                    </label>
-                </div>
+                <span>Collage options:</span>
+                <select name="cells" class="button">
+                    <option value="default">Default (12 columns max)</option>
+                    <option value="noEmpty">Reduce empty cells</option>
+                    <option value="square">Square Scale</option>
+                </select>
+                <label class="button-label">
+                    <input type="checkbox" id="mark_gifs"/>
+                    <div class="button">Mark GIF pics</div>
+                </label>
             </div>
             <div id="collage_content"></div>
         </div>
