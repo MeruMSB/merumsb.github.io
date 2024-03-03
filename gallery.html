@@ -70,6 +70,7 @@
             <button id="collage_btn" class="button" type="button" disabled>Show collage</button>
             <button id="copy_ids" class="button" type="button" disabled>Copy IDs</button>
             <button id="arrange" class="button" type="button" disabled>Copy arrange</button>
+            <button id="custom_arrange" class="button" type="button" disabled>Copy custom arrange</button>
         </div>
         <div id="collage" class="collage" style="display: none;">
             <div class="collage-bar">
@@ -101,6 +102,7 @@
             const pic_list = document.getElementById("pic_list");
             const copy_ids = document.getElementById("copy_ids");
             const arrange = document.getElementById("arrange");
+            const custom_arrange = document.getElementById("custom_arrange");
             const collage_btn = document.getElementById("collage_btn");
             const collage = document.getElementById("collage");
             const collage_content = document.getElementById("collage_content");
@@ -113,6 +115,7 @@
                 collage_btn.removeAttribute("disabled");
                 copy_ids.removeAttribute("disabled");
                 arrange.setAttribute("disabled", true);
+                custom_arrange.setAttribute("disabled", true);
 
                 ids = {};
                 sort_by_numbers = true;
@@ -131,7 +134,7 @@
                 textarea_value = textarea_value.split(/\r?\n|\r|\n/g)
                     .filter(s => s.match(re))
                     .map(s => {
-                        let parts = s.split(re);
+                        let parts = s.trim().split(re);
 
                         if(parts.length==1 && parts[0].includes("mudae.net")) {
                             parts = [
@@ -167,6 +170,7 @@
                 }
 
                 let proms = [];
+                let custom_index = 1;
                 for(let index in textarea_value) {
                     if(typeof index=="undefined") continue;
                     let value = textarea_value[index];
@@ -174,8 +178,10 @@
                     let dataId = crypto.randomUUID();
                     ids[dataId] = {
                         key: value.key.split(/ \| | · /)[0],
-                        pic_id: value.pic_id
+                        pic_id: value.pic_id,
+                        custom_index: custom_index
                     };
+                    custom_index++;
 
                     let li = document.createElement("li");
                         li.classList = "pic-content";
@@ -208,7 +214,7 @@
                 }
                 Promise.all(proms).then(data=>{
                     collage_create();
-                })
+                });
             });
 
             collage_btn.addEventListener("click", function() {
@@ -231,13 +237,24 @@
 
             arrange.addEventListener("click", function() {
                 let arrange_text = [];
-                let separator = sort_by_numbers? ">" : "$" ;
+                let separator = sort_by_numbers? ">" : "$";
                 for(const child of pic_list.children) {
                     arrange_text.push(ids[child.dataset.id].key);
                 }
                 navigator.clipboard.writeText(arrange_text.join(" "+separator+" "));
 
                 show_alert(2500, "<strong>arrange</strong> copied!");
+            });
+
+            custom_arrange.addEventListener("click", function() {
+                let arrange_text = [];
+                let separator = "$";
+                for(const child of pic_list.children) {
+                    arrange_text.push(ids[child.dataset.id].custom_index);
+                }
+                navigator.clipboard.writeText(arrange_text.join(" "+separator+" "));
+
+                show_alert(2500, "<strong>Custom arrange</strong> copied!");
             });
 
             collage_select_cells.addEventListener("change", function() {
@@ -330,6 +347,7 @@
                 ghostClass: 'selected',
                 onEnd: function() {
                     arrange.removeAttribute("disabled");
+                    custom_arrange.removeAttribute("disabled");
                     collage_create();
                 }
             });
