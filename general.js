@@ -22,5 +22,5 @@ document.getElementById("vote_my_fave").addEventListener("click", function(e){
     e.preventDefault();
 
     navigator.clipboard.writeText("$ly Nosepass");
-    show_alert(3000, '<strong>$ly Nosepass</strong> copied!<br/><br/>Paste the command in your Mudae channel.<br/>Thanks for like it!<br/><img width="40" src="petting_probopass.gif">');
+    show_alert(5000, '<strong>$ly Nosepass</strong> copied!<br/><br/>Paste the command in your Mudae channel.<br/>Thanks for like it!<br/><img width="40" src="petting_probopass.gif">');
 });
