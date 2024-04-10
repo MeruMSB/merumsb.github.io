@@ -150,7 +150,6 @@
                                 return;
                             }
                         }
-                        console.log(parts);
                         parts[1] = parts[1].replaceAll("<", "").replaceAll(">", "");
                         parts[2] = parts[1];
                         if(parts[1].includes("mudae.net")) {
@@ -304,10 +303,10 @@
                         if(images.length==4) {
                             col = 2;
                         } else {
-                            col = Math.ceil(Math.sqrt(images.length*imgWidth*imgHeight)/imgWidth);
+                            col = Math.ceil(Math.sqrt(images.length*imgWidth*imgHeight)/imgWidth) + 1;
                             let colCalc = col;
                             let biggerRestCol = col;
-                            let tries = 3;
+                            let tries = 4;
                             while(images.length%col && col>minNoEmptyCol && tries) {
                                 col--;
                                 tries--;
