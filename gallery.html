@@ -43,9 +43,56 @@
                 border: #999;
             }
             /*.pic-list li.pic-content.selected {}*/
-            .pic-list li .pic-index {
+            .pic-list li .pic-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
                 margin-bottom: 8px;
+            }
+            .pic-list li .pic-index {
                 font-weight: 600;
+            }
+            .pic-list li .pic-check {
+                position: relative;
+                flex: 0 0 26px;
+                height: 26px;
+            }
+            .pic-list li .pic-check input {
+                display: none;
+            }
+            .pic-list li .pic-check .pic-check-style {
+                display: inline-block;
+                background: #222;
+                border: 1px solid #999;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                text-align: center;
+                position: relative;
+                align-self: flex-start;
+            }
+            .pic-list li .pic-check input:checked + .pic-check-style {
+                background: #256425;
+            }
+            .pic-list li .pic-check input:checked + .pic-check-style:before {
+                content: "";
+                position: absolute;
+                top: 10px;
+                left: 5px;
+                width: 4px;
+                height: 11px;
+                background: white;
+                transform: rotate(-55deg);
+            }
+            .pic-list li .pic-check input:checked + .pic-check-style:after {
+                content: "";
+                position: absolute;
+                top: 4px;
+                left: 13px;
+                width: 4px;
+                height: 17px;
+                background: white;
+                transform: rotate(35deg);
             }
             .pic-list li img {
                 width: 100%;
@@ -187,22 +234,47 @@
                     ids[dataId] = {
                         key: value.key.split(/ \| | · /)[0],
                         pic_id: value.pic_id,
-                        custom_index: custom_index
+                        custom_index: custom_index,
+                        image: document.createElement("img"),
+                        check: document.createElement("input"),
                     };
                     custom_index++;
             
                     let li = document.createElement("li");
                         li.classList = "pic-content";
                         li.dataset.id = dataId;
+                        
+                    let pic_header = document.createElement("div");
+                        pic_header.classList = "pic-header";
+
+                    let img = ids[dataId].image;
             
+                    li.appendChild(pic_header);
+                    li.appendChild(img);
+                    pic_list.append(li);
+                    
                     let pic_index = document.createElement("div");
                         pic_index.classList = "pic-index";
                         pic_index.innerText = value.key;
-                    let img = document.createElement("img");
-            
-                    li.appendChild(pic_index);
-                    li.appendChild(img);
-                    pic_list.append(li);
+
+                    pic_header.appendChild(pic_index);
+
+                    let pic_check = document.createElement("label");
+                        pic_check.classList = "pic-check";
+                    let pic_check_input = ids[dataId].check;
+                        pic_check_input.classList = "pic-check-input";
+                        pic_check_input.type = "checkbox";
+                        pic_check_input.checked = true;
+                        pic_check_input.addEventListener("change", function() {
+                            collage_create();
+                        });
+                        
+                    let pic_check_style = document.createElement("span");
+                        pic_check_style.classList = "pic-check-style";
+
+                    pic_check.appendChild(pic_check_input);
+                    pic_check.appendChild(pic_check_style);
+                    pic_header.appendChild(pic_check);
             
                     img.src = value.pic;
                     img.setAttribute("referrerpolicy", "no-referrer");
@@ -236,7 +308,8 @@
             copy_ids.addEventListener("click", function() {
                 let pic_ids = [];
                 for(const child of pic_list.children) {
-                    pic_ids.push(ids[child.dataset.id].pic_id);
+                    if(ids[child.dataset.id].check.checked) 
+                        pic_ids.push(ids[child.dataset.id].pic_id);
                 }
                 navigator.clipboard.writeText(pic_ids.join(" "));
             
@@ -247,7 +320,8 @@
                 let arrange_text = [];
                 let separator = sort_by_numbers? ">" : "$";
                 for(const child of pic_list.children) {
-                    arrange_text.push(ids[child.dataset.id].key);
+                    if(ids[child.dataset.id].check.checked) 
+                        arrange_text.push(ids[child.dataset.id].key);
                 }
                 navigator.clipboard.writeText(arrange_text.join(" "+separator+" "));
             
@@ -258,7 +332,8 @@
                 let arrange_text = [];
                 let separator = "$";
                 for(const child of pic_list.children) {
-                    arrange_text.push(ids[child.dataset.id].custom_index);
+                    if(ids[child.dataset.id].check.checked) 
+                        arrange_text.push(ids[child.dataset.id].custom_index);
                 }
                 navigator.clipboard.writeText("$ai arrange \<CharacterName\> $ "+arrange_text.join(" "+separator+" "));
             
@@ -284,7 +359,12 @@
             
             function collage_create() {
                 collage_content.innerText = "";
-                const images = pic_list.querySelectorAll("img");
+                
+                let images = [];
+                for(const child of pic_list.children) {
+                    if(ids[child.dataset.id].check.checked) 
+                        images.push(ids[child.dataset.id].image);
+                }
                 if(images.length<=0) return false;
             
                 const canvas = document.createElement("canvas");
