@@ -10,7 +10,7 @@
             .collage {
                 padding: 8px 0;
                 margin: -8px 0 8px;
-                border: 1px solid #999;
+                border-top: 1px solid #999;
                 border-width: 1px 0;
             }
             .collage canvas {
@@ -27,6 +27,16 @@
                 align-items: center;
                 justify-content: center;
                 flex-wrap: wrap;
+                gap: 8px;
+            }
+            .pic-list-options {
+                padding: 8px 0;
+                margin: -8px 0 8px;
+                border: 1px solid #999;
+                border-width: 1px 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 gap: 8px;
             }
             .pic-list {
@@ -112,7 +122,22 @@
     <body>
 
         <div class="admin">
-            <textarea id="textarea" class="textarea" rows="1" placeholder="[$imsi-] Paste the command result"></textarea>
+            <textarea id="textarea" class="textarea" rows="1" placeholder="[$imsi-] Paste the command result">21. https://mudae.net/uploads/9208365/pl8w712~HEtvLgB.png
+                20. https://mudae.net/uploads/9208365/VGyibiv~FntYoQB.png
+                19. https://mudae.net/uploads/9208365/jP4e2B0~k46ac939lp7.png
+                18. https://mudae.net/uploads/9208365/bDvdCKt~k739colaa27.png
+                17. https://mudae.net/uploads/9208365/K6_i341~21MR0zO.png
+                16. https://mudae.net/uploads/9208365/tjFbJha~JoTx7MF.png
+                15. https://mudae.net/uploads/9208365/8L1WQDW~6yxkcdw2o27.png
+                14. https://mudae.net/uploads/9208365/h8qYCNY~CujV4ip.png
+                13. https://mudae.net/uploads/9208365/YPueYvi~l4nec2q5bk4.png
+                12. https://mudae.net/uploads/9208365/snB9oJ7~2NY8Pij.png
+                11. https://mudae.net/uploads/9208365/n31i_26~6yxkcdw2a27.png
+                10. https://mudae.net/uploads/9208365/ldkPoLf~345xcnqkro7.png
+                9. https://mudae.net/uploads/9208365/04YezXp~my8xc92ljo4.png
+                8. https://mudae.net/uploads/9208365/EI42MYG~wye3cl8pkn4.png
+                7. https://mudae.net/uploads/9208365/N562Y-C~p8Q5Ieq.png
+                6. https://mudae.net/uploads/9208365/-xCeYp4~wyfaLcL.png</textarea>
             <button id="btn" class="button" type="button">Confirm</button>
             <button id="collage_btn" class="button" type="button" disabled>Show collage</button>
             <button id="copy_ids" class="button" type="button" disabled>Copy IDs</button>
@@ -132,6 +157,10 @@
                 </label>
             </div>
             <div id="collage_content"></div>
+        </div>
+        <div id="pic_list_options" class="pic-list-options" style="display: none;">
+            <button id="select_all" class="button" type="button">Select all</button>
+            <button id="deselect_all" class="button" type="button">Deselect all</button>
         </div>
         <ul id="pic_list" class="pic-list"></ul>
         
@@ -154,6 +183,9 @@
             const collage_content = document.getElementById("collage_content");
             const collage_select_cells = document.querySelector('select[name="cells"]');
             const collage_select_mark_gifs = document.getElementById("mark_gifs");
+            const pic_list_options = document.getElementById("pic_list_options");
+            const select_all = document.getElementById("select_all");
+            const deselect_all = document.getElementById("deselect_all");
             
             let ids, sort_by_numbers;
             document.getElementById("btn").addEventListener("click",function(e){
@@ -162,6 +194,7 @@
                 copy_ids.removeAttribute("disabled");
                 arrange.setAttribute("disabled", true);
                 custom_arrange.setAttribute("disabled", true);
+                pic_list_options.style.display = "";
             
                 ids = {};
                 sort_by_numbers = true;
@@ -177,7 +210,6 @@
                 }
             
                 let re = new RegExp(/(?: - |\. |^)(?=https:\/\/|\<https:\/\/)/, "g");
-                console.log(textarea_value.split(/\r?\n|\r|\n/g));
                 textarea_value = textarea_value.split(/\r?\n|\r|\n/g)
                     .filter(s => s.trim().match(re))
                     .map(s => {
@@ -197,7 +229,6 @@
                                 return;
                             }
                         }
-                        console.log(parts);
                         parts[0] = parts[0].replace(/^(Mudae|Mudatest|Mudamaid2): /g,'');
                         parts[1] = parts[1].replaceAll("<", "").replaceAll(">", "");
                         parts[2] = parts[1];
@@ -279,7 +310,7 @@
                     pic_header.appendChild(pic_check);
             
                     img.src = value.pic;
-                    img.setAttribute("referrerpolicy", "no-referrer");
+                    img.referrerPolicy = "no-referrer";
                     proms.push(new Promise(resolve => {
                         img.onload = function() {
                             if(this.naturalWidth!=225) {
@@ -342,6 +373,19 @@
                 show_alert(2500, "<strong>Custom pics arrange</strong> copied!");
             });
             
+            select_all.addEventListener("click", function() {
+                for(const child of pic_list.children) {
+                    ids[child.dataset.id].check.checked = true;
+                }
+                collage_create();
+            });
+            deselect_all.addEventListener("click", function() {
+                for(const child of pic_list.children) {
+                    ids[child.dataset.id].check.checked = false;
+                }
+                collage_create();
+            });
+
             collage_select_cells.addEventListener("change", function() {
                 collage_create();
             });
@@ -370,6 +414,7 @@
                 if(images.length<=0) return false;
             
                 const canvas = document.createElement("canvas");
+                const img = document.createElement("img");
                 const ctx = canvas.getContext("2d");
                 const imgWidth = 225;
                 const imgHeight = 350;
@@ -427,6 +472,7 @@
                     }
                 }
             
+                //img.src = canvas.toDataURL();
                 collage_content.appendChild(canvas);
             }
             
