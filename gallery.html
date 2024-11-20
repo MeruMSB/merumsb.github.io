@@ -219,7 +219,7 @@
                         parts[2] = parts[1];
                         if(parts[1].includes("mudae.net")) {
                             let index_img = parts[1].split("~")[1];
-                            parts[1] = index_img.length > 12 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
+                            //parts[1] = index_img.length > 12 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
                             parts[3] = index_img.split(".")[0];
                         } else {
                             parts[3] = parts[1].match(/\/([^\/]+)\.\w+$/)[1];
