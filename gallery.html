@@ -222,7 +222,7 @@
                             //parts[1] = index_img.length > 12 ? "https://cdn.imgchest.com/files/" + index_img : "https://i.imgur.com/" + index_img;
                             parts[3] = index_img.split(".")[0];
                         } else {
-                            parts[3] = parts[1].match(/\/([^\/]+)\.\w+$/)[1];
+                            parts[3] = parts[1].match(/\/([^\/]+)\.\w+($| )/)[1];
                         }
                         if(isNaN(parts[0])) {
                             sort_by_numbers = false;
