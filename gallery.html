@@ -205,11 +205,16 @@
                                     parts[0].match(/(?<=~)[^\.]+/)[0],
                                     parts[0]
                                 ];
-                            } else if(parts[0].includes("imgur.com") || parts[0].includes("imgchest.com")) {
+                            } else if(parts[0].includes("i.imgur.com") || parts[0].includes("imgchest.com")) {
                                 parts = [
                                     parts[0].match(/\/([^\/]+)\.[^\/]+$/)[1],
                                     parts[0]
                                 ];
+                            } else if(parts[0].includes("imgur.com")) {
+                                parts = [
+                                    parts[0].match(/\/([^\/]+)+$/)[1],
+                                ];
+                                parts.push('https://i.imgur.com/'+parts[0]+'.png')
                             } else {
                                 return;
                             }
